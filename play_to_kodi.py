@@ -3,6 +3,7 @@ import sys
 import requests
 import json
 from urllib import quote_plus
+from http_server import Douyu
 
 def send_jsonrpc(method, parameters, port):
     url = "http://localhost:" + str(port) + "/jsonrpc?request="
@@ -23,8 +24,12 @@ def play_to_kodi(urls, port = 8080):
 
     parameters = {"playlistid": 1}
     playlist = []
-    for url in urls:
-        playlist.append({"file": url})
+    if ((len(urls) == 1) and 
+            ('douyu' in urls[0])):
+        playlist.append({"file": Douyu.get_encoded_url(urls[0])})
+    else:
+        for url in urls:
+            playlist.append({"file": url})
     parameters["item"] = playlist
     send_jsonrpc("Playlist.Add", parameters, port)
 
